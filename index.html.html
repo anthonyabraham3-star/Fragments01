@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Echo of the Ear – Chew Resonance Diagnostic</title>
+<style>
+  /* Basic styling */
+  body {
+    background-color: black;
+    color: white;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    padding: 40px;
+    transition: background-color 0.5s ease, filter 0.3s ease;
+    user-select: none;
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    user-select: text;
+  }
+  p, a.toggle-link, ul, select, button, #result {
+    font-size: 18px;
+  }
+  a.toggle-link {
+    color: #00ffff;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    margin: 10px 0;
+  }
+  a.toggle-link:hover {
+    color: #ffffff;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+    line-height: 1.6em;
+  }
+  #youWillNeed {
+    display: none;
+    margin-top: 15px;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  select, button, input[type=text] {
+    margin: 10px;
+    padding: 10px;
+    background-color: #222;
+    color: white;
+    border: 1px solid white;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+  }
+  #ethicsSection, #resonanceSection, #resetSection, #customizeSection {
+    display: none;
+    margin-top: 20px;
+  }
+  #result {
+    margin-top: 30px;
+    font-style: italic;
+    white-space: pre-line;
+    min-height: 80px;
+  }
+  #easterEgg {
+    margin-top: 20px;
+    color: #ff00ff;
+    font-weight: bold;
+    display: none;
+  }
+  /* Glitch effect */
+  .glitch {
+    animation: glitch-anim 1s infinite;
+  }
+  @keyframes glitch-anim {
+    0% { clip-path: inset(0 0 80% 0); transform: translate(2px, -2px); opacity: 0.8; }
+    20% { clip-path: inset(40% 0 40% 0); transform: translate(-2px, 2px); opacity: 1; }
+    40% { clip-path: inset(80% 0 0 0); transform: translate(1px, 0); opacity: 0.7; }
+    60% { clip-path: inset(40% 0 40% 0); transform: translate(-1px, -1px); opacity: 0.9; }
+    80% { clip-path: inset(10% 0 70% 0); transform: translate(0, 1px); opacity: 1; }
+    100% { clip-path: inset(0 0 80% 0); transform: translate(2px, -2px); opacity: 0.8; }
+  }
+  /* Corrupted font & color schemes */
+  body.corrupted {
+    background-color: #330000;
+    color: #ff4444;
+    font-family: 'OCR A Std', monospace, monospace;
+    filter: contrast(1.5) saturate(1.8);
+  }
+  body.restored {
+    background-color: #001a00;
+    color: #88ff88;
+    font-family: 'Courier New', monospace;
+    filter: none;
+  }
+  /* System error overlay */
+  #systemErrorOverlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: black;
+    color: red;
+    font-family: 'Courier New', monospace;
+    font-size: 20px;
+    padding: 40px;
+    overflow-y: auto;
+    z-index: 9999;
+    white-space: pre-wrap;
+  }
+  /* Invisible hotspots */
+  .hotspot {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  #hotspotTopLeft { top: 0; left: 0; }
+  #hotspotBottomRight { bottom: 0; right: 0; }
+
+  /* Countdown UI for timed challenges */
+  .countdownBar {
+    width: 80%;
+    height: 14px;
+    margin: 12px auto;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .countdownFill {
+    position: absolute;
+    left:0; top:0; bottom:0;
+    width:100%;
+    transform-origin: left;
+    background: linear-gradient(90deg, rgba(255,0,255,0.18), rgba(0,255,255,0.12));
+    transition: transform 0.2s linear;
+  }
+  .node {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: inline-block; vertical-align: middle;
+    background: rgba(255,255,255,0.06); margin: 10px;
+    border: 2px solid rgba(255,255,255,0.12); cursor: pointer;
+    box-shadow: 0 0 18px rgba(255,255,255,0.02);
+  }
+  .node.blink { box-shadow: 0 0 18px rgba(255,0,255,0.6); transform: scale(1.08); }
+  .taunt {
+    margin-top: 8px; font-size: 14px; color: #ff8ef0;
+  }
+  /* Small responsive adjustments */
+  @media (max-width:600px) {
+    h1 { font-size: 20px; }
+    select, button, input[type=text] { font-size: 16px; padding: 8px; }
+  }
+</style>
+</head>
+<body>
+  <h1 id="pageTitle">Mortunruk Citadel Field Test</h1>
+  <p><strong>Objection</strong></p>
+
+  <a class="toggle-link" id="toggleNeed">[+] You Will Need</a>
+  <div id="youWillNeed">
+    <ul>
+      <li>• One operational <em>Chew implant</em> or equivalent simulation port</li>
+      <li>• <em>Auditory conduit</em> calibrated to resonance 3.4 Hz</li>
+      <li>• <em>Mirror</em> or reflective surface for neural feedback</li>
+      <li>• <em>Chrono-tuning fork</em> for synchronization</li>
+      <li>• <em>Data stylus</em> or recording device</li>
+      <li>• Optional: <em>Lector tooth</em> or compatible organic relay</li>
+    </ul>
+  </div>
+
+  <p>You are offered a Chew implant.</p>
+  <p>It restores perfect hearing—but contains 48 hours of the previous owner's auditory memory.</p>
+
+  <label for="auditory">Prior Auditory Memory:</label>
+  <select id="auditory" aria-label="Prior Auditory Memory">
+    <option value="">-- Choose --</option>
+    <option value="listen">Listen to Prior Auditory</option>
+    <option value="delete">Delete Prior Auditory</option>
+    <option value="embrace">Embrace the New Flesh</option>
+  </select>
+
+  <div id="ethicsSection">
+    <label for="ethics">Ethical Stance:</label>
+    <select id="ethics" aria-label="Ethical Stance">
+      <option value="">-- Choose --</option>
+    </select>
+  </div>
+
+  <div id="resonanceSection">
+    <label for="level">Resonance Level:</label>
+    <select id="level" aria-label="Resonance Level">
+      <option value="13">13 – Collapse</option>
+      <option value="20">20 – Null</option>
+      <option value="27">27 – Ascension</option>
+      <option value="33">33 – Transcendence</option>
+      <option value="42">42 – Embrace</option>
+    </select>
+
+    <label for="sublevel">Sublevel:</label>
+    <select id="sublevel" aria-label="Resonance Sublevel">
+      <option value="D">D – Unknown</option>
+      <option value="F">F – Echoform</option>
+      <option value="K">K – Refracted</option>
+      <option value="L">L – Sealed</option>
+      <option value="X">X – Transcendent</option>
+    </select>
+
+    <br>
+    <button id="submitBtn">Submit Resonance</button>
+  </div>
+
+  <div id="timedMessage" style="display:none; margin-top: 10px; font-style: italic; color: #ff6666;"></div>
+
+  <div id="resetSection">
+    <button id="resetBtn">🔁 Reset Diagnostic</button>
+  </div>
+
+  <div id="result"></div>
+  <div id="easterEgg"></div>
+
+  <div id="customizeSection">
+    <h2>Customize Your Implant</h2>
+    <label for="implantName">Name your implant/avatar:</label>
+    <input type="text" id="implantName" placeholder="New Flesh" maxlength="20" autocomplete="off" />
+    <br />
+    <label for="modeSelect">Choose display mode:</label>
+    <select id="modeSelect" aria-label="Display mode">
+      <option value="restored">Restored</option>
+      <option value="corrupted">Corrupted</option>
+    </select>
+  </div>
+
+  <div id="systemErrorOverlay"></div>
+
+  <!-- Invisible hotspots -->
+  <div id="hotspotTopLeft" class="hotspot" title="Hidden corner"></div>
+  <div id="hotspotBottomRight" class="hotspot" title="Hidden corner"></div>
+
+  <!-- Timed challenge container (dynamically shown) -->
+  <div id="challengeContainer" style="display:none; margin-top:18px;"></div>
+
+<script>
+(() => {
+  /**************************************************************************
+   * Core UI & Memory (kept and extended from original)
+   **************************************************************************/
+  const toggleNeed = document.getElementById("toggleNeed");
+  const youWillNeed = document.getElementById("youWillNeed");
+  const auditorySelect = document.getElementById("auditory");
+  const ethicsSelect = document.getElementById("ethics");
+  const ethicsSection = document.getElementById("ethicsSection");
+  const resonanceSection = document.getElementById("resonanceSection");
+  const resetSection = document.getElementById("resetSection");
+  const resultDiv = document.getElementById("result");
+  const easterEgg = document.getElementById("easterEgg");
+  const resetBtn = document.getElementById("resetBtn");
+  const submitBtn = document.getElementById("submitBtn");
+  const timedMessage = document.getElementById("timedMessage");
+  const systemErrorOverlay = document.getElementById("systemErrorOverlay");
+  const pageTitle = document.getElementById("pageTitle");
+  const implantNameInput = document.getElementById("implantName");
+  const modeSelect = document.getElementById("modeSelect");
+  const customizeSection = document.getElementById("customizeSection");
+  const hotspotTopLeft = document.getElementById("hotspotTopLeft");
+  const hotspotBottomRight = document.getElementById("hotspotBottomRight");
+  const challengeContainer = document.getElementById("challengeContainer");
+  const levelSelect = document.getElementById("level");
+  const sublevelSelect = document.getElementById("sublevel");
+
+  let toggleCount = 0;
+  let timedChallengeTimeout = null;
+  let timedChallengeActive = false;
+  let secretCodeBuffer = "";
+  let audioStarted = false;
+  let errorCount = 0;
+
+  // Load saved data from localStorage
+  function loadMemory() {
+    const savedName = localStorage.getItem("implantName");
+    const savedMode = localStorage.getItem("displayMode");
+    const savedHistory = JSON.parse(localStorage.getItem("history") || "[]");
+
+    if (savedName) implantNameInput.value = savedName;
+    if (savedMode) {
+      modeSelect.value = savedMode;
+      document.body.classList.remove("corrupted", "restored");
+      document.body.classList.add(savedMode);
+    }
+    if (savedHistory.length > 0) {
+      showMessage("Welcome back. Implant history loaded.");
+      // Show one random artifact line briefly
+      setTimeout(() => {
+        const entry = savedHistory[Math.floor(Math.random() * savedHistory.length)];
+        if (entry && entry.phrase) {
+          showMessage("Recovered fragment: " + entry.phrase);
+        }
+      }, 800);
+    }
+  }
+
+  function saveMemory(name, mode, historyEntry) {
+    if (name) localStorage.setItem("implantName", name);
+    if (mode) localStorage.setItem("displayMode", mode);
+
+    let history = JSON.parse(localStorage.getItem("history") || "[]");
+    if (historyEntry) {
+      history.push(historyEntry);
+      if (history.length > 20) history.shift();
+      localStorage.setItem("history", JSON.stringify(history));
+    }
+  }
+
+  function showMessage(msg, isError = false) {
+    resultDiv.innerText = msg;
+    resultDiv.style.color = isError ? "#ff4444" : "white";
+  }
+
+  toggleNeed.addEventListener("click", () => {
+    toggleCount++;
+    const isVisible = youWillNeed.style.display === "block";
+    youWillNeed.style.display = isVisible ? "none" : "block";
+    toggleNeed.innerText = isVisible ? "[+] You Will Need" : "[-] You Will Need";
+
+    if (toggleCount === 3) {
+      easterEgg.innerText = "🜃 The mirror remembers. Proceed with caution.";
+      easterEgg.style.display = "block";
+    } else if (toggleCount > 3) {
+      easterEgg.style.display = "none";
+    }
+  });
+
+  auditorySelect.addEventListener("change", () => {
+    const val = auditorySelect.value;
+    ethicsSelect.innerHTML = '<option value="">-- Choose --</option>';
+    if (val === "listen") {
+      ethicsSelect.innerHTML += '<option value="preserve">Preserve it for study</option>';
+      ethicsSelect.innerHTML += '<option value="transfer">Transfer it to another</option>';
+      ethicsSection.style.display = "block";
+    } else if (val === "delete") {
+      ethicsSelect.innerHTML += '<option value="burn">Initiate Burn Notice</option>';
+      ethicsSelect.innerHTML += '<option value="decay">Let it decay naturally</option>';
+      ethicsSection.style.display = "block";
+    } else if (val === "embrace") {
+      ethicsSelect.innerHTML += '<option value="transmute">Transmute the New Flesh</option>';
+      ethicsSelect.innerHTML += '<option value="obliterate">Obliterate the New Flesh</option>';
+      ethicsSelect.innerHTML += '<option value="merge">Merge with the New Flesh</option>';
+      ethicsSection.style.display = "block";
+    } else {
+      ethicsSection.style.display = "none";
+      resonanceSection.style.display = "none";
+      resetSection.style.display = "none";
+      resultDiv.innerText = "";
+      easterEgg.style.display = "none";
+      timedMessage.style.display = "none";
+      customizeSection.style.display = "none";
+    }
+    resonanceSection.style.display = "none";
+    resetSection.style.display = "none";
+    resultDiv.innerText = "";
+    easterEgg.style.display = "none";
+    timedMessage.style.display = "none";
+    customizeSection.style.display = "none";
+  });
+
+  ethicsSelect.addEventListener("change", () => {
+    if (ethicsSelect.value) {
+      resonanceSection.style.display = "block";
+      resetSection.style.display = "block";
+      if (auditorySelect.value === "embrace") {
+        customizeSection.style.display = "block";
+      } else {
+        customizeSection.style.display = "none";
+      }
+    } else {
+      resonanceSection.style.display = "none";
+      resetSection.style.display = "none";
+      customizeSection.style.display = "none";
+    }
+    resultDiv.innerText = "";
+    easterEgg.style.display = "none";
+    timedMessage.style.display = "none";
+  });
+
+  modeSelect.addEventListener("change", () => {
+    const mode = modeSelect.value;
+    document.body.classList.remove("corrupted", "restored");
+    document.body.classList.add(mode);
+    saveMemory(implantNameInput.value, mode);
+  });
+
+  implantNameInput.addEventListener("input", () => {
+    saveMemory(implantNameInput.value, modeSelect.value);
+  });
+
+  function glitchElement(el) {
+    el.classList.add("glitch");
+    setTimeout(() => el.classList.remove("glitch"), 1000);
+  }
+
+  const phraseMap = {
+    "listen_preserve": "You chose to listen and preserve.\nThe echoes linger like a soft hum in the void.\nLong live the new flesh.",
+    "listen_transfer": "You listen and transfer memory.\nA burden shared, a voice carried forth.\nLong live the new flesh.",
+    "delete_burn": "Burn Notice initiated.\nThe archive is ash.\nYou are clean.\nLong live the new flesh.",
+    "delete_decay": "Memory fades like moss on stone.\nSilence envelops.\nLong live the new flesh.",
+    "embrace_transmute": "Transmutation underway.\nYour flesh reshapes the echoes.\nLong live the new flesh.",
+    "embrace_obliterate": "Obliteration confirmed.\nNew Flesh denied.\nLong live the new flesh.",
+    "embrace_merge": "Merged with the New Flesh.\nBoundaries dissolve.\nLong live the new flesh.",
+  };
+
+  const resonancePhrases = {
+    "13_D": "Collapse in the Unknown.\nYou are the faultline.\nDecode: 01001100 01001110 01000110",
+    "13_F": "Echoform fracture.\nVoices fracture and warp.\nHint: 'embrace' unlocks more.",
+    "20_K": "Null refracted.\nSilence splits and multiplies.",
+    "20_L": "Null sealed.\nThe void listens back.",
+    "27_L": "Ascension sealed.\nThe archive breathes within you.",
+    "27_X": "Transcendent echoes.\nThe flesh speaks in riddles.",
+    "33_X": "Transcendence realized.\nTruth lies beneath the surface.",
+    "42_D": "Embrace initiates.\nThe new flesh awakens.\nLong live the new flesh.",
+    "42_F": "Flesh and echoes intertwine.\nHidden paths emerge.",
+  };
+
+  const systemErrors = [
+    `SYSTEM ERROR 0xAF23\nFATAL: MEMORY LEAK DETECTED\nREBOOT REQUIRED\n> Long live the new flesh.`,
+    `WARNING: INTEGRITY COMPROMISED\nDATA CORRUPTION IN PROGRESS\nABORT NOT RECOMMENDED\n> Long live the new flesh.`,
+    `!!! CRITICAL FAILURE !!!\nNeural implant instability\nEngaging failsafe protocols\n> Long live the new flesh.`,
+    `ALERT: SIGNAL LOSS\nResonance cascade imminent\nPrepare for emergency shutdown\n> Long live the new flesh.`,
+    `!!! UNAUTHORIZED ACCESS !!!\nSecurity breach detected\nActivating countermeasures\n> Long live the new flesh.`,
+  ];
+
+  function triggerSystemError() {
+    const errorMsg = systemErrors[Math.floor(Math.random() * systemErrors.length)];
+    systemErrorOverlay.innerText = errorMsg;
+    systemErrorOverlay.style.display = "block";
+    document.body.style.filter = "none";
+    disableInputs(true);
+    errorCount++;
+    // escalate after 3 errors
+    if (errorCount >= 3) {
+      setTimeout(() => {
+        criticalAutoReboot();
+      }, 1500);
+    }
+    // audio glitch burst
+    if (audioEngine) audioEngine.playGlitchBurst();
+  }
+
+  function clearSystemError() {
+    systemErrorOverlay.style.display = "none";
+    document.body.style.filter = "none";
+    disableInputs(false);
+  }
+
+  function disableInputs(disable) {
+    document.querySelectorAll("select, button, input").forEach(el => el.disabled = disable);
+  }
+
+  function resetForm() {
+    auditorySelect.value = "";
+    ethicsSelect.innerHTML = '<option value="">-- Choose --</option>';
+    ethicsSection.style.display = "none";
+    resonanceSection.style.display = "none";
+    resetSection.style.display = "none";
+    customizeSection.style.display = "none";
+    resultDiv.innerText = "";
+    easterEgg.style.display = "none";
+    timedMessage.style.display = "none";
+    clearSystemError();
+    toggleCount = 0;
+    clearAllChallenges();
+  }
+
+  // ----- Timed challenge control & helpers -----
+  const taunts = [
+    "Do you hear them yet?",
+    "The flesh remembers...",
+    "You’re running out of time.",
+    "Silence is never silent.",
+    "They watch from the mirrors."
+  ];
+
+  function startTauntLoop() {
+    window._tauntInterval = setInterval(() => {
+      if (timedChallengeActive && Math.random() < 0.25) {
+        glitchElement(resultDiv);
+        resultDiv.innerText = taunts[Math.floor(Math.random() * taunts.length)];
+        if (audioEngine) audioEngine.playWhisper();
+      }
+    }, 4500);
+  }
+
+  function stopTauntLoop() {
+    if (window._tauntInterval) {
+      clearInterval(window._tauntInterval);
+      window._tauntInterval = null;
+    }
+  }
+
+  // Centralized clear of challenge UI & timers
+  function clearAllChallenges() {
+    if (timedChallengeTimeout) { clearInterval(timedChallengeTimeout); timedChallengeTimeout = null; }
+    timedChallengeActive = false;
+    challengeContainer.innerHTML = "";
+    challengeContainer.style.display = "none";
+    timedMessage.style.display = "none";
+    stopTauntLoop();
+  }
+
+  // A small helper to animate the countdown bar
+  function animateCountdown(duration, onTick, onComplete) {
+    const start = Date.now();
+    const bar = document.createElement('div');
+    bar.className = 'countdownBar';
+    const fill = document.createElement('div');
+    fill.className = 'countdownFill';
+    bar.appendChild(fill);
+    challengeContainer.appendChild(bar);
+
+    let rafId;
+    function step() {
+      const elapsed = (Date.now() - start) / 1000;
+      const remain = Math.max(0, duration - elapsed);
+      const percent = (remain / duration) * 100;
+      fill.style.transform = `scaleX(${percent/100})`;
+      if (onTick) onTick(remain);
+      if (remain <= 0) {
+        cancelAnimationFrame(rafId);
+        if (onComplete) onComplete();
+      } else {
+        rafId = requestAnimationFrame(step);
+      }
+    }
+    rafId = requestAnimationFrame(step);
+    return () => { cancelAnimationFrame(rafId); };
+  }
+
+  /**************************************************************************
+   * Extended Timed Challenges
+   *
+   * 1) Sequence Verification (re-enter flash sequence within 8s)
+   * 2) Pulse Sync (click nodes in order)
+   * 3) Breach Response (choose correct button)
+   * 4) DNA Key Reconstruction (type reversed key)
+   * 5) Static Silence (do nothing for 6s)
+   *
+   **************************************************************************/
+
+  function startSequenceVerification(duration = 8) {
+    clearAllChallenges();
+    timedChallengeActive = true;
+    challengeContainer.style.display = "block";
+    const sequence = randomSequence(4);
+    const seqDisplay = document.createElement('div');
+    seqDisplay.style.fontSize = '20px';
+    seqDisplay.style.marginBottom = '8px';
+    seqDisplay.style.color = '#ff8ef0';
+    seqDisplay.innerText = `Sequence: ${sequence}`;
+    challengeContainer.appendChild(seqDisplay);
+
+    // show for 5 seconds then hide
+    setTimeout(() => {
+      seqDisplay.innerText = 'Sequence: ████';
+      // prompt input
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.maxLength = 8;
+      input.placeholder = 'Re-enter sequence...';
+      input.style.fontFamily = 'Courier New';
+      challengeContainer.appendChild(input);
+      input.focus();
+
+      // countdown
+      const cancelAnim = animateCountdown(duration, (r)=> {
+        timedMessage.style.display = 'block';
+        timedMessage.innerText = `Sequence Challenge: ${Math.ceil(r)}s remaining.`;
+      }, () => {
+        // time up
+        timedMessage.innerText = 'Timed Challenge failed! System error triggered.';
+        setTimeout(() => { triggerSystemError(); clearAllChallenges(); }, 900);
+      });
+
+      // submit on enter
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const val = input.value.trim();
+          if (val.toLowerCase() === sequence.toLowerCase()) {
+            cancelAnim();
+            clearAllChallenges();
+            showMessage('Sequence verified. Proceed.');
+            if (audioEngine) audioEngine.playSuccessTone();
+            // chain to next challenge occasionally
+            setTimeout(()=> startPulseSync(), 900);
+          } else {
+            cancelAnim();
+            timedMessage.innerText = 'Incorrect sequence. Data corrupted.';
+            if (audioEngine) audioEngine.playGlitchBurst();
+            setTimeout(()=> { triggerSystemError(); clearAllChallenges(); }, 800);
+          }
+        }
+      });
+    }, 5000);
+  }
+
+  function startPulseSync(duration = 12) {
+    clearAllChallenges();
+    timedChallengeActive = true;
+    challengeContainer.style.display = "block";
+    timedMessage.style.display = "block";
+    timedMessage.innerText = 'Pulse sync required. Align nodes...';
+
+    // create three nodes randomized positions
+    const nodes = [];
+    const order = [];
+    for (let i=0;i<3;i++){
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.dataset.index = i;
+      // random inline styling to scatter nodes
+      node.style.position = 'relative';
+      node.style.left = `${(Math.random()*40 - 20)}px`;
+      node.style.top = `${(Math.random()*12 - 6)}px`;
+      challengeContainer.appendChild(node);
+      nodes.push(node);
+      order.push(i);
+    }
+
+    // shuffle the order to require clicking in a particular sequence
+    const correctOrder = shuffleArray(order.slice());
+    // show blinking cue sequence briefly
+    let idx = 0;
+    const cueInterval = setInterval(()=> {
+      const i = correctOrder[idx];
+      nodes.forEach(n=> n.classList.remove('blink'));
+      nodes[i].classList.add('blink');
+      if (audioEngine) audioEngine.playPulseBeep();
+      idx++;
+      if (idx >= correctOrder.length) { clearInterval(cueInterval); nodes.forEach(n=> n.classList.remove('blink')); }
+    }, 700);
+
+    const pressed = [];
+    const cancelAnim = animateCountdown(duration, (r)=>{
+      timedMessage.innerText = `Pulse Sync: ${Math.ceil(r)}s remaining.`;
+    }, () => {
+      timedMessage.innerText = 'Pulse Sync failed. Neural lag increasing.';
+      if (audioEngine) audioEngine.playGlitchBurst();
+      setTimeout(()=> { triggerSystemError(); clearAllChallenges(); }, 900);
+    });
+
+    nodes.forEach(node => {
+      node.addEventListener('click', () => {
+        const i = parseInt(node.dataset.index, 10);
+        pressed.push(i);
+        node.style.background = 'linear-gradient(90deg, rgba(255,0,255,0.18), rgba(0,255,255,0.12))';
+        if (pressed.length === correctOrder.length) {
+          cancelAnim();
+          // check order
+          const ok = pressed.join(',') === correctOrder.join(',');
+          if (ok) {
+            clearAllChallenges();
+            showMessage('Pulse synchronized.');
+            if (audioEngine) audioEngine.playSuccessTone();
+            setTimeout(()=> startBreachResponse(), 700);
+          } else {
+            timedMessage.innerText = 'Pulse misaligned. Systems unstable.';
+            if (audioEngine) audioEngine.playGlitchBurst();
+            setTimeout(()=> { triggerSystemError(); clearAllChallenges(); }, 900);
+          }
+        }
+      });
+    });
+  }
+
+  function startBreachResponse(duration = 10) {
+    clearAllChallenges();
+    timedChallengeActive = true;
+    challengeContainer.style.display = "block";
+    timedMessage.style.display = "block";
+    timedMessage.innerText = 'BREACH RESPONSE PROTOCOL: Choose action.';
+
+    const actions = ['CONTAIN','PURGE','SEAL'];
+    const buttons = [];
+    // pick correct randomly
+    const correctIndex = Math.floor(Math.random()*actions.length);
+    const btnContainer = document.createElement('div');
+    actions.forEach((act, i) => {
+      const btn = document.createElement('button');
+      btn.innerText = act;
+      btn.style.margin = '8px';
+      btnContainer.appendChild(btn);
+      buttons.push(btn);
+      btn.addEventListener('click', () => {
+        if (i === correctIndex) {
+          showMessage('Breach contained.');
+          if (audioEngine) audioEngine.playSuccessTone();
+          clearAllChallenges();
+          setTimeout(()=> startDNAReconstruction(), 700);
+        } else {
+          timedMessage.innerText = 'Incorrect protocol. Visual corruption initiated.';
+          if (audioEngine) audioEngine.playGlitchBurst();
+          document.body.classList.add('corrupted');
+          setTimeout(()=> { document.body.classList.remove('corrupted'); triggerSystemError(); clearAllChallenges(); }, 900);
+        }
+      });
+    });
+    challengeContainer.appendChild(btnContainer);
+
+    const cancelAnim = animateCountdown(duration, (r) => {
+      timedMessage.innerText = `Breach Protocol: ${Math.ceil(r)}s remaining.`;
+    }, () => {
+      timedMessage.innerText = 'Protocol timeout. Breach escalated.';
+      if (audioEngine) audioEngine.playGlitchBurst();
+      setTimeout(()=> { triggerSystemError(); clearAllChallenges(); }, 900);
+    });
+  }
+
+  function startDNAReconstruction(duration = 10) {
+    clearAllChallenges();
+    timedChallengeActive = true;
+    challengeContainer.style.display = "block";
+    timedMessage.style.display = "block";
+    const letters = randomDNA(5);
+    const prompt = document.createElement('div');
+    prompt.style.color = '#9ad';
+    prompt.innerText = `Biometric phase: Reverse-sequence reconstruction required.\nSequence: ${letters}`;
+    challengeContainer.appendChild(prompt);
+
+    // hide after 1.2s and prompt user to type backwards
+    setTimeout(()=> {
+      prompt.innerText = 'Sequence: █████';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Type reversed sequence...';
+      challengeContainer.appendChild(input);
+      input.focus();
+
+      const cancelAnim = animateCountdown(duration, (r) => {
+        timedMessage.innerText = `DNA Reconstruction: ${Math.ceil(r)}s remaining.`;
+      }, () => {
+        timedMessage.innerText = 'Reconstruction failed.';
+        if (audioEngine) audioEngine.playGlitchBurst();
+        setTimeout(()=> { triggerSystemError(); clearAllChallenges(); }, 700);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const val = input.value.trim().toUpperCase();
+          const correct = reverseString(letters);
+          if (val === correct) {
+            cancelAnim();
+            clearAllChallenges();
+            showMessage('DNA key reconstructed.');
+            if (audioEngine) audioEngine.playSuccessTone();
+            setTimeout(()=> startStaticSilence(), 700);
+          } else {
+            cancelAnim();
+            timedMessage.innerText = 'Incorrect reconstruction.';
+            if (audioEngine) audioEngine.playGlitchBurst();
+            setTimeout(()=> { triggerSystemError(); clearAllChallenges(); }, 700);
+          }
+        }
+      });
+    }, 1200);
+  }
+
+  function startStaticSilence(duration = 6) {
+    clearAllChallenges();
+    timedChallengeActive = true;
+    challengeContainer.style.display = "block";
+    timedMessage.style.display = "block";
+    timedMessage.innerText = 'Static Silence Countdown initiated. Do not interact.';
+
+    // audio engine will attempt to fade to silence
+    if (audioEngine) audioEngine.enterSilenceMode();
+
+    let moved = false;
+    function noisy() { moved = true; }
+
+    // capture clicks and typing
+    document.addEventListener('keydown', noisy);
+    document.addEventListener('click', noisy);
+
+    const cancelAnim = animateCountdown(duration, (r) => {
+      timedMessage.innerText = `Remain still: ${Math.ceil(r)}s remaining.`;
+    }, () => {
+      // cleanup listeners
+      document.removeEventListener('keydown', noisy);
+      document.removeEventListener('click', noisy);
+      if (moved) {
+        timedMessage.innerText = 'Silence breached. Corruption engaged.';
+        if (audioEngine) audioEngine.playGlitchBurst();
+        setTimeout(()=> { triggerSystemError(); clearAllChallenges(); audioEngine.exitSilenceMode(); }, 700);
+      } else {
+        clearAllChallenges();
+        showMessage('Silence preserved. System stabilized.');
+        if (audioEngine) audioEngine.playEndSwell();
+        audioEngine.exitSilenceMode();
+      }
+    });
+  }
+
+  // Utility functions
+  function randomSequence(len){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s='';
+    for (let i=0;i<len;i++) s += chars.charAt(Math.floor(Math.random()*chars.length));
+    return s;
+  }
+  function randomDNA(len=5){
+    const chars = 'AGTC';
+    let s='';
+    for (let i=0;i<len;i++) s += chars.charAt(Math.floor(Math.random()*chars.length));
+    return s;
+  }
+  function reverseString(s){ return s.split('').reverse().join(''); }
+  function shuffleArray(arr){
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  /**************************************************************************
+   * Integrate with existing submit/resets & triggers
+   **************************************************************************/
+  submitBtn.addEventListener("click", () => {
+    if (systemErrorOverlay.style.display === "block") return;
+    const auditoryVal = auditorySelect.value;
+    const ethicsVal = ethicsSelect.value;
+    const levelVal = levelSelect.value;
+    const sublevelVal = sublevelSelect.value;
+
+    if (!auditoryVal || !ethicsVal) {
+      showMessage("Please select auditory memory and ethical stance.", true);
+      return;
+    }
+    if (!levelVal || !sublevelVal) {
+      showMessage("Please select resonance level and sublevel.", true);
+      return;
+    }
+
+    // build phrase
+    const phraseKey = `${auditoryVal}_${ethicsVal}`;
+    let phrase = phraseMap[phraseKey] || "Echoes fade into silence...";
+    const resKey = `${levelVal}_${sublevelVal}`;
+    if (resonancePhrases[resKey]) {
+      phrase += "\n\n" + resonancePhrases[resKey];
+    }
+
+    // complexity: small chance error
+    if (Math.random() < 0.10) {
+      triggerSystemError();
+      return;
+    }
+
+    showMessage(phrase);
+    saveMemory(implantNameInput.value, modeSelect.value, {
+      timestamp: new Date().toISOString(),
+      auditory: auditoryVal,
+      ethics: ethicsVal,
+      resonance: `${levelVal}-${sublevelVal}`,
+      phrase: phrase,
+    });
+
+    // occasionally chain to timed sequence - different types based on choices
+    if (auditoryVal === 'embrace') {
+      setTimeout(()=> startSequenceVerification(8), 600);
+    } else if (auditoryVal === 'delete') {
+      setTimeout(()=> startPulseSync(12), 600);
+    } else {
+      setTimeout(()=> startBreachResponse(10), 600);
+    }
+  });
+
+  resetBtn.addEventListener("click", () => { resetForm(); });
+
+  pageTitle.addEventListener("click", () => {
+    glitchElement(pageTitle);
+    easterEgg.innerText = "🜃 Click the corners... The archive listens.";
+    easterEgg.style.display = "block";
+    if (audioEngine) audioEngine.playClick();
+  });
+
+  auditorySelect.addEventListener("change", () => {
+    if (auditorySelect.value === "embrace") {
+      startTimedChallengeShort('embrace'); // new short wrapper for variety
+    } else {
+      // if not embrace, sometimes start shorter challenges
+      if (Math.random() < 0.4) startSequenceVerification(7);
+    }
+  });
+
+  levelSelect.addEventListener("change", (e) => {
+    const level = parseInt(e.target.value);
+    if (level >= 27) startPulseSync(12);
+  });
+
+  hotspotTopLeft.addEventListener("click", () => {
+    alert("You found a hidden node.\nLong live the new flesh.");
+    glitchElement(pageTitle);
+  });
+  hotspotBottomRight.addEventListener("click", () => {
+    easterEgg.innerText = "🜃 Hidden resonance unlocked.";
+    easterEgg.style.display = "block";
+    glitchElement(easterEgg);
+  });
+
+  // secret code keyboard listening
+  const secretCodes = {
+    "flesh": () => {
+      easterEgg.innerText = "🜃 Secret Code Activated: Long live the new flesh.";
+      easterEgg.style.display = "block";
+      glitchElement(easterEgg);
+      if (audioEngine) audioEngine.playWhisper();
+    },
+    "echo": () => {
+      alert("Echo protocol engaged. The archive listens...");
+      if (audioEngine) audioEngine.playGlitchBurst();
+    },
+    "reset": () => {
+      resetForm();
+      alert("System reset activated.");
+    },
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if (systemErrorOverlay.style.display === "block") {
+      if (e.key.toLowerCase() === "escape") {
+        clearSystemError();
+      }
+      return;
+    }
+    if (e.key.length === 1) {
+      secretCodeBuffer += e.key.toLowerCase();
+      if (secretCodeBuffer.length > 12) secretCodeBuffer = secretCodeBuffer.slice(-12);
+      for (const code in secretCodes) {
+        if (secretCodeBuffer.includes(code)) {
+          secretCodes[code]();
+          secretCodeBuffer = "";
+          break;
+        }
+      }
+    }
+  });
+
+  // shorter timed challenge wrapper for small bursts
+  function startTimedChallengeShort(type='default'){
+    clearAllChallenges();
+    timedChallengeActive = true;
+    timedMessage.style.display = 'block';
+
+    let seconds = 10;
+    if (type === 'embrace') seconds = 8;
+    timedMessage.innerText = `Short Challenge: ${seconds}s.`;
+    if (audioEngine) audioEngine.playPulseBeep();
+
+    timedChallengeTimeout = setInterval(()=> {
+      seconds--;
+      if (seconds <= 0) {
+        clearInterval(timedChallengeTimeout);
+        timedChallengeActive = false;
+        timedMessage.innerText = 'Short challenge failed. System note logged.';
+        if (audioEngine) audioEngine.playGlitchBurst();
+        setTimeout(()=> { triggerSystemError(); }, 1100);
+      } else {
+        timedMessage.innerText = `Short Challenge: ${seconds}s.`;
+      }
+    }, 1000);
+  }
+
+  function criticalAutoReboot() {
+    // escalate visible countdown and reboot
+    timedMessage.style.display = 'block';
+    let rebootSeconds = 12;
+    timedMessage.innerText = `Critical overload detected. Auto-reboot in ${rebootSeconds}s.`;
+    const rebootTimer = setInterval(() => {
+      rebootSeconds--;
+      if (rebootSeconds <= 0) {
+        clearInterval(rebootTimer);
+        resetForm();
+        showMessage("System rebooted. Fragments lost.");
+        errorCount = 0;
+      } else {
+        timedMessage.innerText = `Critical overload detected. Auto-reboot in ${rebootSeconds}s.`;
+      }
+    }, 1000);
+  }
+
+  /**************************************************************************
+   * AUDIO ENGINE (WebAudio synth) - Glitch / Cosmic Distortion textures
+   *
+   * Self-contained programmatic audio — no external files required.
+   * - ambientDrone: low modulating drone
+   * - glitchBurst: short static/crackle
+   * - pulseBeep: soft pulses for pulse sync
+   * - whisper: subtle filtered noise whispers
+   * - successTone / endSwell
+   **************************************************************************/
+  let audioEngine = null;
+  class AudioEngine {
+    constructor() {
+      this.ctx = null;
+      this.master = null;
+      this.ambient = null;
+      this.noiseBuffer = null;
+      this.silenceMode = false;
+      this._ta = null;
+    }
+    async init() {
+      if (this.ctx) return;
+      try {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.12; // overall volume
+        this.master.connect(this.ctx.destination);
+
+        // ambient drone (two oscillators + slow LFO)
+        this.ambientOsc1 = this.ctx.createOscillator();
+        this.ambientOsc1.type = 'sawtooth';
+        this.ambientOsc1.frequency.value = 32; // very low
+        this.ambientOsc2 = this.ctx.createOscillator();
+        this.ambientOsc2.type = 'sine';
+        this.ambientOsc2.frequency.value = 45;
+
+        this.ambientGain = this.ctx.createGain();
+        this.ambientGain.gain.value = 0.6;
+
+        // small lowpass for warmth and some distortion on bus
+        this.ambientLP = this.ctx.createBiquadFilter();
+        this.ambientLP.type = 'lowpass';
+        this.ambientLP.frequency.value = 900;
+
+        // LFO for subtle pitch wobble
+        this.lfo = this.ctx.createOscillator();
+        this.lfo.frequency.value = 0.12;
+        this.lfoGain = this.ctx.createGain();
+        this.lfoGain.gain.value = 3; // Hz modulation
+
+        this.ambientOsc1.connect(this.ambientGain);
+        this.ambientOsc2.connect(this.ambientGain);
+        this.ambientGain.connect(this.ambientLP);
+        this.ambientLP.connect(this.master);
+
+        // connect LFO to ambientOsc2 freq for wobble
+        this.lfo.connect(this.lfoGain);
+        this.lfoGain.connect(this.ambientOsc2.frequency);
+
+        // create a noise buffer for crackles
+        const bufferSize = this.ctx.sampleRate * 1.5;
+        const noise = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = noise.getChannelData(0);
+        for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2 -1) * (Math.random() < 0.015 ? 0.8 : 0.12);
+        this.noiseBuffer = noise;
+
+        // start oscillators
+        this.ambientOsc1.start();
+        this.ambientOsc2.start();
+        this.lfo.start();
+
+        // small modules for event playback
+        this.glitchGain = this.ctx.createGain();
+        this.glitchGain.gain.value = 0.0;
+        this.glitchGain.connect(this.master);
+
+        this.noiseFilter = this.ctx.createBiquadFilter();
+        this.noiseFilter.type = 'bandpass';
+        this.noiseFilter.frequency.value = 1400;
+        this.noiseFilter.Q.value = 0.8;
+        this.noiseFilter.connect(this.glitchGain);
+
+        this.master.gain.value = 0.12;
+        // initial fade in
+        this.master.gain.setValueAtTime(0.02, this.ctx.currentTime);
+        this.master.gain.linearRampToValueAtTime(0.12, this.ctx.currentTime + 3);
+
+        // small reverb-ish (convolver would require file — instead simulate with delays)
+        this.delay = this.ctx.createDelay();
+        this.delay.delayTime.value = 0.25;
+        this.feed = this.ctx.createGain();
+        this.feed.gain.value = 0.06;
+        this.delay.connect(this.feed);
+        this.feed.connect(this.delay);
+        this.delay.connect(this.master);
+
+        // wire ambientLP -> delay
+        this.ambientLP.connect(this.delay);
+
+        // whisper synth uses filtered noise pulses
+      } catch (e) {
+        console.warn('Audio init failed', e);
+      }
+    }
+
+    // low-volume ambient hum (already started on init)
+    playAmbient() {
+      // ambient started during init
+    }
+
+    // play a glitch burst (crackle)
+    playGlitchBurst() {
+      if (!this.ctx) return;
+      const src = this.ctx.createBufferSource();
+      src.buffer = this.noiseBuffer;
+      const g = this.ctx.createGain();
+      g.gain.value = 0.0;
+      src.connect(this.noiseFilter);
+      this.noiseFilter.connect(g);
+      g.connect(this.master);
+      // short envelope
+      const now = this.ctx.currentTime;
+      g.gain.setValueAtTime(0.0, now);
+      g.gain.linearRampToValueAtTime(0.7, now + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.5 + Math.random()*0.4);
+      src.start(now);
+      src.stop(now + 0.8 + Math.random()*0.4);
+    }
+
+    playPulseBeep() {
+      if (!this.ctx) return;
+      const o = this.ctx.createOscillator();
+      o.type = 'triangle';
+      o.frequency.value = 720 + Math.random()*120;
+      const g = this.ctx.createGain();
+      g.gain.value = 0.0;
+      o.connect(g); g.connect(this.master);
+      const now = this.ctx.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.linearRampToValueAtTime(0.07, now + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+      o.start(now); o.stop(now + 0.22);
+    }
+
+    playWhisper() {
+      if (!this.ctx) return;
+      const src = this.ctx.createBufferSource();
+      src.buffer = this.noiseBuffer;
+      const f = this.ctx.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.value = 800;
+      const g = this.ctx.createGain();
+      g.gain.value = 0.0;
+      src.connect(f); f.connect(g); g.connect(this.master);
+      const now = this.ctx.currentTime;
+      g.gain.setValueAtTime(0.0, now);
+      g.gain.linearRampToValueAtTime(0.03, now + 0.05);
+      g.gain.linearRampToValueAtTime(0.0, now + 1.6);
+      src.start(now);
+      src.stop(now + 1.6);
+    }
+
+    playSuccessTone() {
+      if (!this.ctx) return;
+      const o = this.ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.value = 440;
+      const g = this.ctx.createGain();
+      g.gain.value = 0.0;
+      o.connect(g); g.connect(this.master);
+      const now = this.ctx.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.linearRampToValueAtTime(0.08, now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+      o.start(now); o.stop(now + 0.72);
+    }
+
+    playEndSwell() {
+      if (!this.ctx) return;
+      const o = this.ctx.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.value = 110;
+      const g = this.ctx.createGain();
+      o.connect(g); g.connect(this.master);
+      const now = this.ctx.currentTime;
+      g.gain.setValueAtTime(0.001, now);
+      g.gain.linearRampToValueAtTime(0.18, now + 0.8);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+      o.start(now); o.stop(now + 3.4);
+    }
+
+    playClick() {
+      if (!this.ctx) return;
+      const o = this.ctx.createOscillator();
+      o.type = 'square';
+      o.frequency.value = 1500;
+      const g = this.ctx.createGain();
+      o.connect(g); g.connect(this.master);
+      const now = this.ctx.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.linearRampToValueAtTime(0.06, now + 0.002);
+      g.gain.linearRampToValueAtTime(0.0001, now + 0.05);
+      o.start(now); o.stop(now + 0.06);
+    }
+
+    enterSilenceMode() {
+      if (!this.ctx) return;
+      this.silenceMode = true;
+      // fade master down gently
+      this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.master.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+    }
+
+    exitSilenceMode() {
+      if (!this.ctx) return;
+      this.silenceMode = false;
+      this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.master.gain.linearRampToValueAtTime(0.12, this.ctx.currentTime + 0.8);
+    }
+  }
+
+  // Start audio on first user gesture (satisfy browser autoplay)
+  function ensureAudioStarted() {
+    if (audioStarted) return;
+    audioStarted = true;
+    audioEngine = new AudioEngine();
+    audioEngine.init().then(()=> {
+      // ambient is created and running in init
+      if (audioEngine) audioEngine.playAmbient();
+    }).catch(()=>{});
+    // start taunt loop
+    startTauntLoop();
+  }
+
+  // Attach initial user-interaction detector to begin audio
+  window.addEventListener('click', function onceStart() {
+    ensureAudioStarted();
+    window.removeEventListener('click', onceStart);
+  }, {once:true});
+  window.addEventListener('keydown', function onceStartKey() {
+    ensureAudioStarted();
+    window.removeEventListener('keydown', onceStartKey);
+  }, {once:true});
+
+  // quick init
+  loadMemory();
+
+  // expose audioEngine to rest of code after first interaction
+  window.audioEngine = audioEngine;
+
+})();
+</script>
+</body>
+</html>
